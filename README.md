@@ -39,3 +39,12 @@ L'application sera en architecture client-serveur, en modèle MVC
 
 ### Membres du projet
 * SIMON-FINE Thibaut
+
+
+# Legal
+
+## Avant le 1er Juin 2018 00:00:00
+Le projet étant commun, interdiction d'utilisation et de modification de tout code dont je suis l'auteur sans autorisation de ma part (hormis services.classes.ErrorPrint qui peut être réutilisé/modifié tant que je suis cité en tant qu'auteur original).
+
+## A partir du 1er Juin 2018
+Vous êtes libres d'utiliser et modifier mon code tant que je suis cité en tant qu'auteur original.
