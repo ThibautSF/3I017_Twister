@@ -4,7 +4,7 @@
 package bd;
 
 /**
- * @author tsimonfine
+ * @author Thibaut SIMON-FINE
  *
  */
 public class DBStatic {

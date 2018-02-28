@@ -14,6 +14,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
+ * @author Thibaut SIMON-FINE
+ * 
  * Servlet implementation class Login
  */
 @WebServlet("/Login")

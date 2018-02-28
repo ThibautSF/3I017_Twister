@@ -16,6 +16,8 @@ import org.json.JSONObject;
 import services.classes.InvalidKeyException;
 
 /**
+ * @author Thibaut SIMON-FINE
+ * 
  * Servlet implementation class ListFriend
  */
 @WebServlet("/ListFriend")

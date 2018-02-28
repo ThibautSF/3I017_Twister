@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import services.classes.InvalidKeyException;
 
 /**
- * @author tsimonfine
+ * @author Thibaut SIMON-FINE
  *
  */
 public class FriendTools {

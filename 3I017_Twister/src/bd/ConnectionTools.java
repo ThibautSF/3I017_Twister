@@ -13,7 +13,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
 
 /**
- * @author tsimonfine
+ * @author Thibaut SIMON-FINE
  *
  */
 public class ConnectionTools {

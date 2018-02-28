@@ -16,6 +16,8 @@ import org.json.JSONObject;
 import services.classes.NumberValueException;
 
 /**
+ * @author Thibaut SIMON-FINE
+ * 
  * Servlet implementation class CreateUser
  */
 @WebServlet("/CrateUser")

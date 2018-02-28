@@ -4,7 +4,7 @@
 package services.classes;
 
 /**
- * @author tsimonfine
+ * @author Thibaut SIMON-FINE
  *
  */
 public class InvalidKeyException extends Exception { //TODO RuntimeException ????

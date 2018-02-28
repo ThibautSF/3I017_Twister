@@ -13,17 +13,10 @@ import services.classes.InvalidKeyException;
 import services.classes.NumberValueException;
 
 /**
- * @author tsimonfine
+ * @author Thibaut SIMON-FINE
  *
  */
 public class Test {
-
-	/**
-	 * 
-	 */
-	public Test() {
-		// TODO Stub du constructeur généré automatiquement
-	}
 
 	public static void main(String[] args) {
 		String login = "thibaut";

@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import services.classes.NumberValueException;
 
 /**
- * @author tsimonfine
+ * @author Thibaut SIMON-FINE
  *
  */
 public class Users {

@@ -20,7 +20,7 @@ import com.mongodb.DBObject;
 import services.classes.InvalidKeyException;
 
 /**
- * @author tsimonfine
+ * @author Thibaut SIMON-FINE
  *
  */
 public class MessageTools {

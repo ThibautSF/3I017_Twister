@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package services;
 
 import java.sql.SQLException;
@@ -7,6 +10,10 @@ import org.json.JSONObject;
 
 import services.classes.InvalidKeyException;
 
+/**
+ * @author Thibaut SIMON-FINE
+ *
+ */
 public class Friends {
 	
 	public static JSONObject addFriend(String key, int id_friend) throws JSONException, SQLException, InvalidKeyException{

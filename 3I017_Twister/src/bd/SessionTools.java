@@ -13,7 +13,7 @@ import java.util.UUID;
 import services.classes.InvalidKeyException;
 
 /**
- * @author tsimonfine
+ * @author Thibaut SIMON-FINE
  *
  */
 public class SessionTools {
