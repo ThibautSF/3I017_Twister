@@ -39,7 +39,7 @@ public class CreateUser extends HttpServlet {
 		String pwd = request.getParameter("pwd");
 		String nom = (request.getParameter("nom")!=null && request.getParameter("nom")!="") ? request.getParameter("nom") : "" ;
 		String prenom = (request.getParameter("prenom")!=null && request.getParameter("prenom")!="") ? request.getParameter("prenom") : "" ;
-		String ageStr = (request.getParameter("ageStr")!=null && request.getParameter("ageStr")!="") ? request.getParameter("ageStr") : "-1" ;
+		String ageStr = (request.getParameter("age")!=null && request.getParameter("age")!="") ? request.getParameter("age") : "-1" ;
 		
 		PrintWriter out = response.getWriter();
 		
