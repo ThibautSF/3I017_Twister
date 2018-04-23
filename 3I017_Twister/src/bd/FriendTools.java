@@ -82,6 +82,9 @@ public class FriendTools {
 			userFriends.put(json);
 		}
 		
+		st.close();
+		c.close();
+		
 		return userFriends;
 	}
 

@@ -33,6 +33,8 @@ public class Login extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String key = (request.getParameter("key")!=null && request.getParameter("key")!="") ? request.getParameter("key") : "" ;
+		
 		String login = request.getParameter("login");
 		String pwd = request.getParameter("pwd");
 		boolean root = (request.getParameter("root")!=null) ? Boolean.parseBoolean(request.getParameter("root")) : false ;
@@ -40,7 +42,12 @@ public class Login extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		
 		try {
-			JSONObject json = services.Users.login(login, pwd, root);
+			JSONObject json;
+			if(key!="")
+				json = services.Users.login(key);
+			else
+				json = services.Users.login(login, pwd, root);
+				
 			
 			response.setContentType("text/plain");
 			out.print(json.toString());

@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import services.classes.InvalidKeyException;
 import services.classes.NumberValueException;
 
 /**
@@ -77,6 +78,17 @@ public class Users {
 		json.put("key", key);
 		
 		return json;
+	}
+	
+	public static JSONObject login(String key) throws JSONException, SQLException {
+		try {
+			if(bd.SessionTools.isKeyValid(key))
+				return AnswerJSON.defaultJSONAccept();
+		} catch (InvalidKeyException e) {
+			return AnswerJSON.defaultJSONError(e.getMessage(), 101);
+		}
+		
+		return AnswerJSON.defaultJSONError("UNKNOWN ERROR", 0);
 	}
 
 	public static JSONObject logout(String key) throws JSONException, SQLException {

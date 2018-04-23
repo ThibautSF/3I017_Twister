@@ -53,16 +53,33 @@ public class UserTools {
 		
 		ResultSet rs = st.executeQuery(query);
 		
-		if(rs.next()){
-			int id = rs.getInt(1);
-			st.close();
-			return id;
-		}
+		int id = -1;
+		
+		if(rs.next())
+			id = rs.getInt(1);
 		
 		st.close();
 		c.close();
 		
-		return -1;
+		return id;
+	}
+	
+	public static String getLoginUser(int user_id) throws SQLException{
+		Connection c = ConnectionTools.getMySQLConnection();
+		Statement st = c.createStatement();
+		String query = "SELECT login FROM "+DBStatic.TABLE_USER+" WHERE id=\""+user_id+"\";";
+		
+		ResultSet rs = st.executeQuery(query);
+		
+		String login = "";
+		
+		if(rs.next())
+			login = rs.getString(1);
+		
+		st.close();
+		c.close();
+		
+		return login;
 	}
 
 	public static void newUser(String login, String password, String nom, String prenom, int age) throws SQLException, NumberValueException{

@@ -29,6 +29,17 @@ public class Messages {
 		return AnswerJSON.defaultJSONAccept();
 	}
 	
+	public static JSONObject addComment(String key, String content, String parent) throws JSONException, UnknownHostException, SQLException, InvalidKeyException{
+		//1 - Clés null/vide
+		if (key == null || key == "")
+			return AnswerJSON.defaultJSONError("Erreur de clé", 4);
+		
+		//2 - Ajouter le message
+		bd.MessageTools.addComment(key, content, parent);
+		
+		return AnswerJSON.defaultJSONAccept();
+	}
+	
 	public static JSONObject removeMessage(String key, String id_message) throws JSONException, UnknownHostException, SQLException, InvalidKeyException{
 		//1 - Clés null/vide
 		if (key == null || key == "")

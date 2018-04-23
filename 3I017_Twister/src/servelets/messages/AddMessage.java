@@ -37,11 +37,16 @@ public class AddMessage extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String key = request.getParameter("key");
 		String content = request.getParameter("content");
+		String parent = (request.getParameter("parent")!=null && request.getParameter("parent")!="") ? request.getParameter("parent") : "" ;
 		
 		PrintWriter out = response.getWriter();
 		
 		try {
-			JSONObject json = services.Messages.addMessage(key, content);
+			JSONObject json;
+			if(parent!=""){
+				json = services.Messages.addComment(key, content, parent);
+			} else
+				json = services.Messages.addMessage(key, content);
 			
 			response.setContentType("text/plain");
 			out.print(json.toString());
