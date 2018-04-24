@@ -121,10 +121,14 @@ public class MessageTools {
 	
 	public static JSONObject getMessageById(String key, String id_message) throws UnknownHostException, JSONException, SQLException, InvalidKeyException {
 		bd.SessionTools.getUserByKey(key);
-		return getMessageById(id_message);
+		return getMessageById(id_message, true);
 	}
 	
 	public static JSONObject getMessageById(String id_message) throws UnknownHostException, JSONException, SQLException {
+		return getMessageById(id_message, true);
+	}
+	
+	public static JSONObject getMessageById(String id_message, boolean escParent) throws UnknownHostException, JSONException, SQLException {
 		DBCollection message = ConnectionTools.getMongoCollection("message");
 		BasicDBObject query = new BasicDBObject("_id",new ObjectId(id_message));
 		DBCursor msg = message.find(query);
@@ -144,12 +148,19 @@ public class MessageTools {
 		if(commentIds!=null){
 			for (Object one_comment : commentIds) {
 				ObjectId message_id = (ObjectId) one_comment;
-				comments.put(getMessageById(message_id.toString()));
+				comments.put(getMessageById(message_id.toString(),false));
 			}
 		}
 		json.put("comments", comments);
 		
-		if(document.get("parent")!=null) json.put("parent", document.get("parent"));
+		if(document.get("parent")!=null){
+			String idparent = (String) document.get("parent");
+			json.put("parent", idparent);
+			if(escParent){
+				JSONObject message_parent = getMessageById(idparent, false);
+				json.put("parent_author", message_parent.get("author"));
+			}
+		}
 		
 		return json;
 	}
@@ -186,12 +197,17 @@ public class MessageTools {
 			if(commentIds!=null){
 				for (Object one_comment : commentIds) {
 					ObjectId message_id = (ObjectId) one_comment;
-					comments.put(getMessageById(message_id.toString()));
+					comments.put(getMessageById(message_id.toString(),false));
 				}
 			}
 			json.put("comments", comments);
 			
-			if(document.get("parent")!=null) json.put("parent", document.get("parent"));
+			if(document.get("parent")!=null){
+				String idparent = (String) document.get("parent");
+				json.put("parent", idparent);
+				JSONObject message_parent = getMessageById(idparent, false);
+				json.put("parent_author", message_parent.get("author"));
+			}
 			
 			userMessages.put(json);
 		}
@@ -227,12 +243,17 @@ public class MessageTools {
 			if(commentIds!=null){
 				for (Object one_comment : commentIds) {
 					ObjectId message_id = (ObjectId) one_comment;
-					comments.put(getMessageById(message_id.toString()));
+					comments.put(getMessageById(message_id.toString(),false));
 				}
 			}
 			json.put("comments", comments);
 			
-			if(document.get("parent")!=null) json.put("parent", document.get("parent"));
+			if(document.get("parent")!=null){
+				String idparent = (String) document.get("parent");
+				json.put("parent", idparent);
+				JSONObject message_parent = getMessageById(idparent, false);
+				json.put("parent_author", message_parent.get("author"));
+			}
 			
 			userMessages.put(json);
 		}
@@ -255,6 +276,9 @@ public class MessageTools {
 			JSONObject json = new JSONObject();
 			JSONObject auteur = new JSONObject();
 			DBObject document = msg.next();
+			
+			if(document.get("parent")!=null) continue;
+			
 			auteur.put("user_id", document.get("user_id"));
 			auteur.put("login", bd.UserTools.getLoginUser(Integer.parseInt(document.get("user_id").toString())));
 			json.put("author", auteur);
@@ -267,12 +291,10 @@ public class MessageTools {
 			if(commentIds!=null){
 				for (Object one_comment : commentIds) {
 					ObjectId message_id = (ObjectId) one_comment;
-					comments.put(getMessageById(message_id.toString()));
+					comments.put(getMessageById(message_id.toString(),false));
 				}
 			}
 			json.put("comments", comments);
-			
-			if(document.get("parent")!=null) json.put("parent", document.get("parent"));
 			
 			userMessages.put(json);
 		}
