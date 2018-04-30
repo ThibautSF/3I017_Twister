@@ -26,12 +26,12 @@ import services.classes.InvalidKeyException;
  */
 public class MessageTools {
 
-	public static void addMessage(String key, String content) throws SQLException, InvalidKeyException, UnknownHostException {
+	public static String addMessage(String key, String content) throws SQLException, InvalidKeyException, UnknownHostException {
 		int id_user = bd.SessionTools.getUserByKey(key);
-		addMessage(id_user, content);
+		return addMessage(id_user, content);
 	}
 	
-	public static void addMessage(int id_user, String content) throws UnknownHostException {
+	public static String addMessage(int id_user, String content) throws UnknownHostException {
 		DBCollection message = ConnectionTools.getMongoCollection("message");
 		BasicDBObject query = new BasicDBObject();
 		query.put("user_id", id_user);
@@ -40,14 +40,18 @@ public class MessageTools {
 		query.put("date", c.getTime());
 		query.put("comments", new BasicDBList());
 		message.insert(query);
+		
+		ObjectId last_id = (ObjectId) query.get("_id");
+		
+		return last_id.toString();
 	}
 	
-	public static void addComment(String key, String content, String parent) throws SQLException, InvalidKeyException, UnknownHostException {
+	public static String addComment(String key, String content, String parent) throws SQLException, InvalidKeyException, UnknownHostException {
 		int id_user = bd.SessionTools.getUserByKey(key);
-		addComment(id_user, content, parent);
+		return addComment(id_user, content, parent);
 	}
 	
-	public static void addComment(int id_user, String content, String parent) throws UnknownHostException {
+	public static String addComment(int id_user, String content, String parent) throws UnknownHostException {
 		DBCollection message = ConnectionTools.getMongoCollection("message");
 		BasicDBObject query = new BasicDBObject("_id", new ObjectId(parent));
 		DBCursor msg = message.find(query);
@@ -71,8 +75,11 @@ public class MessageTools {
 			comments.add(last_id);
 			
 			message.update(query, new BasicDBObject("$set", new BasicDBObject("comments", comments)));
+			
+			return last_id.toString();
 		}
 		
+		return "";
 	}
 	
 	public static void removeMessage(String key, String id_message) throws UnknownHostException, SQLException, InvalidKeyException{

@@ -24,9 +24,14 @@ public class Messages {
 			return AnswerJSON.defaultJSONError("Erreur de clé", 4);
 		
 		//2 - Ajouter le message
-		bd.MessageTools.addMessage(key, content);
+		String id_message = bd.MessageTools.addMessage(key, content);
 		
-		return AnswerJSON.defaultJSONAccept();
+		//3 - Récupère le message
+		JSONObject json = AnswerJSON.defaultJSONAccept();
+		JSONObject json_message = bd.MessageTools.getMessageById(key,id_message);
+		json.put("message", json_message);
+		
+		return json;
 	}
 	
 	public static JSONObject addComment(String key, String content, String parent) throws JSONException, UnknownHostException, SQLException, InvalidKeyException{
@@ -35,9 +40,14 @@ public class Messages {
 			return AnswerJSON.defaultJSONError("Erreur de clé", 4);
 		
 		//2 - Ajouter le message
-		bd.MessageTools.addComment(key, content, parent);
+		String id_message = bd.MessageTools.addComment(key, content, parent);
 		
-		return AnswerJSON.defaultJSONAccept();
+		//3 - Récupère le message
+		JSONObject json = AnswerJSON.defaultJSONAccept();
+		JSONObject json_message = bd.MessageTools.getMessageById(key,id_message);
+		json.put("message", json_message);
+		
+		return json;
 	}
 	
 	public static JSONObject removeMessage(String key, String id_message) throws JSONException, UnknownHostException, SQLException, InvalidKeyException{

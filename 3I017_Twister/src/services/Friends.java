@@ -16,7 +16,7 @@ import services.classes.InvalidKeyException;
  */
 public class Friends {
 	
-	public static JSONObject addFriend(String key, int id_friend) throws JSONException, SQLException, InvalidKeyException{
+	public static JSONObject addFriend(String key, int id_friend) throws JSONException, SQLException, InvalidKeyException {
 		//1 - Clés null/vide
 		if (key == null || key == "")
 			return AnswerJSON.defaultJSONError("Erreur de clé", 4);
@@ -26,14 +26,17 @@ public class Friends {
 			//3 - Ajouter ami
 			bd.FriendTools.addFriend(key, id_friend);
 			
-			return AnswerJSON.defaultJSONAccept();
+			JSONObject json = AnswerJSON.defaultJSONAccept();
+			json.put("login", bd.UserTools.getLoginUser(id_friend));
+			
+			return json;
 		}
 		
 		//TODO erreur id
 		return AnswerJSON.defaultJSONError("ID user non existant", 101);
 	}
 	
-	public static JSONObject removeFriend(String key, int id_friend) throws JSONException, SQLException, InvalidKeyException{
+	public static JSONObject removeFriend(String key, int id_friend) throws JSONException, SQLException, InvalidKeyException {
 		//1 - Clés null/vide
 		if (key == null || key == "")
 			return AnswerJSON.defaultJSONError("Erreur de clé", 4);
@@ -44,7 +47,7 @@ public class Friends {
 		return AnswerJSON.defaultJSONAccept();
 	}
 	
-	public static JSONObject getFriend(String key) throws JSONException, SQLException, InvalidKeyException{
+	public static JSONObject getFriend(String key) throws JSONException, SQLException, InvalidKeyException {
 		//1 - Clés null/vide
 		if (key == null || key == "")
 			return AnswerJSON.defaultJSONError("Erreur de clé", 4);

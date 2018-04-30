@@ -58,7 +58,7 @@ public class Users {
 	}
 
 	
-	public static JSONObject login(String login, String pwd, boolean root) throws JSONException, SQLException{
+	public static JSONObject login(String login, String pwd, boolean root) throws JSONException, SQLException {
 		//1 - Verification null/vide
 		if (login == null || login == "" || pwd == null || pwd == "")
 			return AnswerJSON.defaultJSONError("login et/ou password vide", 0);
@@ -73,17 +73,37 @@ public class Users {
 		
 		//4 - Génération d'une clé de session
 		String key = bd.SessionTools.insertSession(login, root);
+		int id;
+		try {
+			id = bd.SessionTools.getUserByKey(key);
+		} catch (InvalidKeyException e) {
+			return AnswerJSON.defaultJSONError(e.getMessage(), 101);
+		}
 		
 		JSONObject json = AnswerJSON.defaultJSONAccept();
 		json.put("key", key);
+		json.put("user_id", id);
+		json.put("login", login);
+		json.put("isroot", root);
 		
 		return json;
 	}
 	
 	public static JSONObject login(String key) throws JSONException, SQLException {
 		try {
-			if(bd.SessionTools.isKeyValid(key))
-				return AnswerJSON.defaultJSONAccept();
+			if(bd.SessionTools.isKeyValid(key)){
+				int id = bd.SessionTools.getUserByKey(key);
+				String login = bd.UserTools.getLoginUser(id);
+				boolean root = bd.SessionTools.isKeyRoot(key);
+				
+				JSONObject json = AnswerJSON.defaultJSONAccept();
+				json.put("key", key);
+				json.put("user_id", id);
+				json.put("login", login);
+				json.put("isroot", root);
+				
+				return json;
+			}
 		} catch (InvalidKeyException e) {
 			return AnswerJSON.defaultJSONError(e.getMessage(), 101);
 		}

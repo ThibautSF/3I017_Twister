@@ -72,7 +72,7 @@ public class SessionTools {
 		c.close();
 	}
 	
-	public static String insertSession(String login, boolean isRoot) throws SQLException{
+	public static String insertSession(String login, boolean isRoot) throws SQLException {
 		//Récupération de l'id user
 		int user_id = UserTools.getIdUser(login);
 		
@@ -100,7 +100,7 @@ public class SessionTools {
 		return key;
 	}
 	
-	public static boolean checkKey(String key) throws SQLException{
+	public static boolean checkKey(String key) throws SQLException {
 		Connection c = ConnectionTools.getMySQLConnection();
 		Statement st = c.createStatement();
 		String query = "SELECT * FROM "+DBStatic.TABLE_SESSION+" WHERE skey=\""+key+"\";";
@@ -115,7 +115,7 @@ public class SessionTools {
 		return check;
 	}
 	
-	public static boolean isKeyValid(String key) throws SQLException, InvalidKeyException{
+	public static boolean isKeyValid(String key) throws SQLException, InvalidKeyException {
 		Connection c = ConnectionTools.getMySQLConnection();
 		Statement st = c.createStatement();
 		String query = "SELECT * FROM "+DBStatic.TABLE_SESSION+" WHERE skey=\""+key+"\";";
@@ -148,7 +148,7 @@ public class SessionTools {
 		throw new InvalidKeyException();
 	}
 	
-	public static void updateSession(String key) throws SQLException{
+	public static void updateSession(String key) throws SQLException {
 		Connection c = ConnectionTools.getMySQLConnection();
 		Statement st = c.createStatement();
 		
@@ -158,6 +158,25 @@ public class SessionTools {
 		
 		st.close();
 		c.close();
+	}
+	
+	public static boolean isKeyRoot(String key) throws SQLException {
+		Connection c = ConnectionTools.getMySQLConnection();
+		Statement st = c.createStatement();
+		String query = "SELECT * FROM "+DBStatic.TABLE_SESSION+" WHERE skey=\""+key+"\";";
+		ResultSet rs = st.executeQuery(query);
+		
+		if(rs.next()){
+			if(rs.getBoolean("root")){
+				
+				st.close();
+				c.close();
+				
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 }
