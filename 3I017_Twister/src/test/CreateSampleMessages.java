@@ -22,11 +22,11 @@ public class CreateSampleMessages {
 			
 			Thread.sleep(1000);
 			
-			MessageTools.addComment(3, "Enfin inscrit !? :)", message_id);
+			MessageTools.addComment(2, "Enfin inscrit !? :)", message_id);
 			Thread.sleep(1000);
-			MessageTools.addComment(4, "Bienvenue !", message_id);
+			MessageTools.addComment(3, "Bienvenue !", message_id);
 			
-			array = MessageTools.getMessagesUser(4);
+			array = MessageTools.getMessagesUser(3);
 			obj = array.getJSONObject(0);
 			message_id = obj.optString("message_id");
 			
@@ -36,7 +36,16 @@ public class CreateSampleMessages {
 			Thread.sleep(1000);
 			MessageTools.addMessage(1, "Aujourd'hui je me suis inscrit ici");
 			Thread.sleep(1000);
-			MessageTools.addMessage(1, "La fonction de commentaire devrait fonctionner...");
+			MessageTools.addMessage(2, "J'ai passé ma Fête du Travail à travailler !");
+			Thread.sleep(1000);
+			
+			array = MessageTools.getMessagesUser(2);
+			obj = array.getJSONObject(0);
+			message_id = obj.optString("message_id");
+			
+			MessageTools.addComment(1, "Pas cool ça, mais parfois on est bien obligé :/", message_id);
+			Thread.sleep(2000);
+			MessageTools.addComment(3, "Courrage :)", message_id);
 			
 			System.out.println("Done");
 		} catch (UnknownHostException | JSONException | SQLException | InterruptedException e) {
