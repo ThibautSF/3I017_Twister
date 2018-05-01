@@ -1,4 +1,4 @@
-package servelets.messages;
+package servelets.services;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,30 +18,30 @@ import services.classes.InvalidKeyException;
 /**
  * @author Thibaut SIMON-FINE
  * 
- * Servlet implementation class GetMessage
+ * Servlet implementation class Search
  */
-@WebServlet("/GetMessage")
-public class GetMessage extends HttpServlet {
+@WebServlet("/Search")
+public class Search extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public GetMessage() {
-        super();
-    }
+	
+	/**
+	 * @see HttpServlet#HttpServlet()
+	 */
+	public Search() {
+		super();
+	}
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String key = request.getParameter("key");
-		String id_message = request.getParameter("id");
+		String query = request.getParameter("q");
 		
 		PrintWriter out = response.getWriter();
 		
 		try {
-			JSONObject json = services.Messages.getMessage(key, id_message);
+			JSONObject json = services.Services.search(key, query);
 			
 			response.setContentType("text/plain");
 			out.print(json.toString());
@@ -51,17 +51,16 @@ public class GetMessage extends HttpServlet {
 		} catch (InvalidKeyException e) {
 			response.setContentType("text/plain");
 			out.print(e.getMessage());
-			//TODO déconnexion !
 		} finally {
 			out.close();
 		}
 	}
-
+	
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
-
+	
 }

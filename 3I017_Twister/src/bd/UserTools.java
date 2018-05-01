@@ -8,6 +8,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import services.classes.NumberValueException;
 
 /**
@@ -16,7 +20,7 @@ import services.classes.NumberValueException;
  */
 public class UserTools {
 	
-	public static boolean userExists(String login) throws SQLException{
+	public static boolean userExists(String login) throws SQLException {
 		Connection c = ConnectionTools.getMySQLConnection();
 		Statement st = c.createStatement();
 		String query = "SELECT * FROM "+DBStatic.TABLE_USER+" WHERE login=\""+login+"\";";
@@ -31,7 +35,7 @@ public class UserTools {
 		return check;
 	}
 	
-	public static boolean userIDExists(int id_user) throws SQLException{
+	public static boolean userIDExists(int id_user) throws SQLException {
 		Connection c = ConnectionTools.getMySQLConnection();
 		Statement st = c.createStatement();
 		String query = "SELECT * FROM "+DBStatic.TABLE_USER+" WHERE id="+id_user+";";
@@ -46,7 +50,7 @@ public class UserTools {
 		return check;
 	}
 	
-	public static int getIdUser(String login) throws SQLException{
+	public static int getIdUser(String login) throws SQLException {
 		Connection c = ConnectionTools.getMySQLConnection();
 		Statement st = c.createStatement();
 		String query = "SELECT id FROM "+DBStatic.TABLE_USER+" WHERE login=\""+login+"\";";
@@ -64,7 +68,7 @@ public class UserTools {
 		return id;
 	}
 	
-	public static String getLoginUser(int user_id) throws SQLException{
+	public static String getLoginUser(int user_id) throws SQLException {
 		Connection c = ConnectionTools.getMySQLConnection();
 		Statement st = c.createStatement();
 		String query = "SELECT login FROM "+DBStatic.TABLE_USER+" WHERE id=\""+user_id+"\";";
@@ -82,7 +86,7 @@ public class UserTools {
 		return login;
 	}
 
-	public static void newUser(String login, String password, String nom, String prenom, int age) throws SQLException, NumberValueException{
+	public static void newUser(String login, String password, String nom, String prenom, int age) throws SQLException, NumberValueException {
 		Connection c = ConnectionTools.getMySQLConnection();
 		Statement st = c.createStatement();
 		
@@ -109,7 +113,7 @@ public class UserTools {
 		c.close();
 	}
 	
-	public static boolean checkPassword(String login, String password) throws SQLException{
+	public static boolean checkPassword(String login, String password) throws SQLException {
 		Connection c = ConnectionTools.getMySQLConnection();
 		Statement st = c.createStatement();
 		String query = "SELECT * FROM "+DBStatic.TABLE_USER+" WHERE login=\""+login+"\" AND password=PASSWORD(\""+password+"\");";
@@ -122,6 +126,45 @@ public class UserTools {
 		c.close();
 		
 		return check;
+	}
+
+	public static JSONArray searchUsers(int user_id, String user_query) throws SQLException, JSONException {
+		String[] words = user_query.split(" ");
+		
+		String regex = "";
+		for (int i = 0; i < words.length; i++) {
+			if(words[i]!=""){
+				regex+=words[i];
+				if(i<words.length-1)
+					regex+="|";
+			}
+		}
+		
+		Connection c = ConnectionTools.getMySQLConnection();
+		Statement st = c.createStatement();
+		String query = "SELECT id,login FROM "+DBStatic.TABLE_USER+" WHERE LOWER(login) REGEXP \""+regex+"\";";
+		
+		System.out.println(query);
+		
+		ResultSet rs = st.executeQuery(query);
+		
+		JSONArray list_users = new JSONArray();
+		
+		while(rs.next()){
+			JSONObject user = new JSONObject();
+			
+			int id = rs.getInt(1);
+			String login = rs.getString(2);
+			
+			user.put("id", id);
+			user.put("login", login);
+			list_users.put(user);
+		}
+		
+		st.close();
+		c.close();
+		
+		return list_users;
 	}
 	
 	

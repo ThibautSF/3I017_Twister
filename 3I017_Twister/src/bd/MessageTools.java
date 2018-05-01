@@ -319,6 +319,65 @@ public class MessageTools {
 		return bd.MessageTools.getMessagesUsers(friendsID, max_value);
 	}
 	
+	public static JSONArray searchMessages(int id_user, String message_query) throws UnknownHostException, JSONException, SQLException, NumberFormatException {
+		String[] words = message_query.split(" ");
+		
+		String regex = "(";
+		for (int i = 0; i < words.length; i++) {
+			if(words[i]!=""){
+				regex+=words[i];
+				if(i<words.length-1)
+					regex+="|";
+			}
+		}
+		regex += ")";
+		
+		DBCollection message = ConnectionTools.getMongoCollection("message");
+		BasicDBObject query = new BasicDBObject();
+		//query.put("user_id", new BasicDBObject("$ne", id_user));
+		BasicDBObject reg = new BasicDBObject();
+		reg.put("$regex", regex);
+		reg.put("$options", "i");
+		query.put("content", reg);
+		System.out.println(query.toString());
+		DBCursor msg = message.find(query);
+		msg.sort(new BasicDBObject("date",-1));
+		JSONArray userMessages = new JSONArray();
+		
+		while(msg.hasNext()){
+			JSONObject json = new JSONObject();
+			JSONObject auteur = new JSONObject();
+			DBObject document = msg.next();
+			auteur.put("user_id", document.get("user_id"));
+			auteur.put("login", bd.UserTools.getLoginUser(Integer.parseInt(document.get("user_id").toString())));
+			json.put("author", auteur);
+			json.put("message_id", document.get("_id"));
+			json.put("content", document.get("content"));
+			json.put("date", document.get("date"));
+			
+			JSONArray comments = new JSONArray();
+			BasicDBList commentIds = (BasicDBList) document.get("comments");
+			if(commentIds!=null){
+				for (Object one_comment : commentIds) {
+					ObjectId message_id = (ObjectId) one_comment;
+					comments.put(getMessageById(message_id.toString(),false));
+				}
+			}
+			json.put("comments", comments);
+			
+			if(document.get("parent")!=null){
+				String idparent = (String) document.get("parent");
+				json.put("parent", idparent);
+				JSONObject message_parent = getMessageById(idparent, false);
+				json.put("parent_author", message_parent.get("author"));
+			}
+			
+			userMessages.put(json);
+		}
+		
+		return userMessages;
+	}
+	
 	public static void main(String[] args) {
 		try {
 			System.out.println("Ajout d'un message (affichage par ordre de date décroissante) : ");
