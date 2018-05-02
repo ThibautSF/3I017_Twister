@@ -1,0 +1,20 @@
+<div id="message-{{id}}" class="message">
+	<div class="message-titre">
+		<div class="message-auteur link" data-id="{{idauteur}}" data-login="{{auteur}}" onclick="javascript:showProfilePage(this)">{{auteur}}</div>
+		<div class="message-date"> - {{date}}</div>
+		<div class="message-parent link" data-pauteur="{{idpauteur}}" data-pmessage="{{idpmessage}}" style="{{pdisplay}}" onclick="javascript:showMessageParent(this)"> en réponse à <span style="font-weight: bold;">{{pauteur}}</span></div>
+		<div class="message-suivre link" data-user="{{idauteur}}" style="{{sdisplay}}" onclick="javascript:changeFriendStatus(this)">{{suivitag}}</div>
+	</div>
+	<div class="message-content">{{texte}}</div>
+	<div class="btn-exp" data-exp="{{expstatus}}" onclick="javascript:showhide(this)">{{exptag}}</div>
+	<div style="overflow: hidden; clear: both;"></div>
+	<div id="commentaires-{{id}}" class="commentaires" style="display: none;">
+		<div id="listcom-{{id}}" class="listcom"></div>
+		<form action="javascript:(function(){ return; })()" method="get" onsubmit="javascript:nouveauMessage(this)">
+			<textarea name="content" placeholder="Écrivez votre réponse" class="newmessage-content"></textarea>
+			<input type="hidden" name="parent" value="{{id}}" />
+			<input type="submit" name="message" value="Envoyer" class="btn btn-newmessage" />
+			<div style="overflow: hidden; clear: both;"></div>
+		</form>
+	</div>
+</div>
