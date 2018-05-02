@@ -27,9 +27,8 @@ Environnement.prototype = {
 		console.log(getCookie("sessionKey"));
 	},
 	delSession: function () {
-		env.isRoot = false;
-		env.idUser = undefined;
-		env.login = undefined;
+		env = new Environnement("");
+
 		setCookie("sessionKey","",-1);
 		console.log(getCookie("sessionKey"));
 	},
