@@ -10,8 +10,12 @@ MongoDB 3.2.19
 Procédure de mise en place
 ---------------
 Les fichiers sont situés dans le répertoire Install/
-- 3I017_Twister.war → application tomcat
+- 3I017_Twister.war → application tomcat à importer
 - importMongoDB.sh → script d'import de BDD MongoDB (lance la commande 'mongoimport' avec les paramètre adéquats)
 - twister.sql → script SQL de création la BDD SQL (à importer dans MySQL)
 - twister_mongo.message.json → fichier de sauvegarde de la BDD MongoDB
 
+---------------
+Lancement
+---------------
+Se connecter sur __TOMCAT_HOST__/3I017_Twister/index.html

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 
 /**
  * @author SIMON-FINE Thibaut (alias Bisougai)
+ * From https://github.com/ThibautSF/ParadoxosModManager
  *
  */
 public class ErrorPrint {
