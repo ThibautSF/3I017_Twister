@@ -18,6 +18,7 @@ function Environnement(sKey){
 	this.idUser = undefined;
 	this.login = undefined;
 	this.listFriends = [];
+	this.listToApprove = [];
 }
 
 Environnement.prototype = {
@@ -101,11 +102,14 @@ function User(id,login) {
 	this.login = login;
 }
 
-User.prototype.renderHtml = function(mconteneur) {
-	var template = "<div class='user-container'><div class='user link' data-id='{{iduser}}' data-login='{{loginuser}}' onclick='javascript:showProfilePage(this)'>{{loginuser}}</div></div>";
+User.prototype.renderHtml = function(mconteneur,option="") {
+	var template = "<div class='user-container'><div class='user link' data-id='{{iduser}}' data-login='{{loginuser}}' onclick='javascript:showProfilePage(this)'>{{loginuser}}</div>{{#isApproveList}}<button data-id='{{iduser}}' data-login='{{loginuser}}' onclick='javascript:refuseFriend(this)'>R</button><button data-id='{{iduser}}' data-login='{{loginuser}}' onclick='javascript:acceptFriend(this)'>A</button>{{/isApproveList}}</div>";
+
+
 	var values = {
 		iduser: this.id,
-		loginuser: this.login 
+		loginuser: this.login,
+		isApproveList: (option=="approveList") ? true : false
 	}
 
 	var rendered = Mustache.render(template, values);
@@ -360,6 +364,13 @@ function listUser(mconteneur,users) {
 		one_user.renderHtml(mconteneur);
 	}
 }
+
+function listToApproveUsers(mconteneur) {
+
+	env.listToApprove.forEach(function(user) {
+		user.renderHtml(mconteneur,"approveList");
+	});
+}
 /* END User */
 
 /* BEGIN Friends fct */
@@ -379,7 +390,17 @@ function getListFriends(init=false) {
 					env.listFriends[one_friend.user_id] = one_user;
 				}
 
+				jsonToApprove = msg.waitApproved;
+				for (var i = 0; i < jsonToApprove.length; i++) {
+					var one_friend = jsonToApprove[i];
+					var one_user = new User(one_friend.user_id,one_friend.login);
+					env.listToApprove[one_friend.user_id] = one_user;
+				}
+
+				listToApproveUsers($('#nav'));
+
 				console.log(env.listFriends);
+				console.log(env.listToApprove);
 
 				if(init) loadMessagesList();
 			} else {
@@ -435,6 +456,42 @@ function changeFriendStatus(elem) {
 function showProfilePage(elem) {
 	u = new User(elem.getAttribute('data-id'),elem.getAttribute('data-login'));
 	loadProfilePage(u);
+}
+
+function refuseFriend(elem) {
+	var id_friend= elem.getAttribute('data-id');
+	var request = $.ajax({
+		method: "POST",
+		url: "friend/approveFriend",
+		data: { key: env.sessionKey, friend: id_friend, action: "refuse"},
+		dataType: "json",
+		success: function(msg){
+			console.log(msg)
+			if(msg.Status=="OK"){
+				alert("Refusé");
+			} else {
+				alert("Erreur ajout ami");
+			}
+		}
+	});
+}
+
+function acceptFriend(elem) {
+	var id_friend= elem.getAttribute('data-id');
+	var request = $.ajax({
+		method: "POST",
+		url: "friend/approveFriend",
+		data: { key: env.sessionKey, friend: id_friend, action: "accept" },
+		dataType: "json",
+		success: function(msg){
+			console.log(msg)
+			if(msg.Status=="OK"){
+				alert("Acccepté");
+			} else {
+				alert("Erreur ajout ami");
+			}
+		}
+	});
 }
 /* END Friends fct */
 

@@ -34,6 +34,14 @@
     <url-pattern>/friend/addFriend</url-pattern>
   </servlet-mapping>
   <servlet>
+    <servlet-name>ApproveFriend</servlet-name>
+    <servlet-class>servelets.friends.ApproveFriend</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ApproveFriend</servlet-name>
+    <url-pattern>/friend/approveFriend</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>RemoveFriend</servlet-name>
     <servlet-class>servelets.friends.RemoveFriend</servlet-class>
   </servlet>

@@ -56,8 +56,36 @@ public class Friends {
 		JSONObject json = AnswerJSON.defaultJSONAccept();
 		
 		json.put("friends", bd.FriendTools.listFriend(key));
+		json.put("waitApproved", bd.FriendTools.listWaitApproved(key));
 		
 		return json;
 	}
-
+	
+	public static JSONObject approveOrNotFriend(String key, int id_friend, String action) throws JSONException, SQLException, InvalidKeyException {
+		//1 - Clés null/vide
+		if (key == null || key == "")
+			return AnswerJSON.defaultJSONError("Erreur de clé", 4);
+		
+		//2 - Verifier id user friend existe
+		if (bd.UserTools.userIDExists(id_friend)){
+			JSONObject json;
+			//1 - Approuver ou non ami
+			if(action.equals("accept")){
+				bd.FriendTools.approveFriend(key, id_friend);
+				json = AnswerJSON.defaultJSONAccept();
+				json.put("login", bd.UserTools.getLoginUser(id_friend));
+			} else if (action.equals("refuse")){
+				int id_user = bd.SessionTools.getUserByKey(key);
+				bd.FriendTools.removeFriend(id_friend, id_user);
+				json = AnswerJSON.defaultJSONAccept();
+				json.put("login", bd.UserTools.getLoginUser(id_friend));
+			} else {
+				json = AnswerJSON.defaultJSONError("action inconnue", 100);
+			}
+			
+			return json;
+		}
+		
+		return AnswerJSON.defaultJSONError("ID user non existant", 101);
+	}
 }

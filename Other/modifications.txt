@@ -1,0 +1,246 @@
+----
+SQL
+----
+Ajout de la colonne Friend.approved de forme TINYINT(1) avec valeur par défaut à 0
+
+
+----
+Tomcat
+----
+servelets.Friends.ListFriend → le servlet renverra aussi la liste des utilisateur en attente d'aprobation
+
+services.Friends.getFriend(String key)
+Ajout de la ligne
+#Code
+	json.put("waitApproved", bd.FriendTools.listWaitApproved(key));
+#END
+
+bd.FriendTools → ajout de listWaitApproved(Sting key)
+#Code
+	public static JSONArray listWaitApproved(String key) throws SQLException, InvalidKeyException, JSONException{
+		int id_user = SessionTools.getUserByKey(key);
+		return listWaitApproved(id_user);
+	}
+	
+	private static JSONArray listWaitApproved(int id_user) throws SQLException, JSONException {
+		Connection c = ConnectionTools.getMySQLConnection();
+		Statement st = c.createStatement();
+		
+		String query = "SELECT U.* FROM "+DBStatic.TABLE_FRIEND+" AS F JOIN "
+				+DBStatic.TABLE_USER+" AS U ON F.id_user=U.id WHERE id_friend="+id_user+" AND approved=0;";
+		
+		ResultSet rs = st.executeQuery(query);
+		
+		JSONArray userFriends = new JSONArray();
+		
+		while (rs.next()) {
+			JSONObject json = new JSONObject();
+			
+			json.put("user_id", rs.getInt("id"));
+			json.put("login", rs.getString("login"));
+			
+			userFriends.put(json);
+		}
+#End
+
+→  modification de listFriend(int id_user)
+modification de la requête
+#Code
+		String query = "SELECT U.* FROM "+DBStatic.TABLE_FRIEND+" AS F JOIN "
+				+DBStatic.TABLE_USER+" AS U ON F.id_friend=U.id WHERE id_user="+id_user+" AND approved=1;";
+#End
+
+servelets.Friends.ApproveFriend → nouveau servlet : prends key+id_friend+action(accept|refuse)
+#Code (dans web.xml)
+  <servlet>
+    <servlet-name>ApproveFriend</servlet-name>
+    <servlet-class>servelets.friends.ApproveFriend</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ApproveFriend</servlet-name>
+    <url-pattern>/friend/approveFriend</url-pattern>
+  </servlet-mapping>
+  <servlet>
+#End
+
+services.Friends.approveOrNotFriend(String key, int id_friend, String action) → nouvelle méthode
+#Code
+	public static JSONObject approveOrNotFriend(String key, int id_friend, String action) throws JSONException, SQLException, InvalidKeyException {
+		//1 - Clés null/vide
+		if (key == null || key == "")
+			return AnswerJSON.defaultJSONError("Erreur de clé", 4);
+		
+		//2 - Verifier id user friend existe
+		if (bd.UserTools.userIDExists(id_friend)){
+			JSONObject json;
+			//1 - Approuver ou non ami
+			if(action.equals("accept")){
+				bd.FriendTools.approveFriend(key, id_friend);
+				json = AnswerJSON.defaultJSONAccept();
+				json.put("login", bd.UserTools.getLoginUser(id_friend));
+			} else if (action.equals("refuse")){
+				int id_user = bd.SessionTools.getUserByKey(key);
+				bd.FriendTools.removeFriend(id_friend, id_user);
+				json = AnswerJSON.defaultJSONAccept();
+				json.put("login", bd.UserTools.getLoginUser(id_friend));
+			} else {
+				json = AnswerJSON.defaultJSONError("action inconnue", 100);
+			}
+			
+			return json;
+		}
+		
+		return AnswerJSON.defaultJSONError("ID user non existant", 101);
+	}
+#End
+
+bd.FriendTools.approveFriend(key, id_friend) → nouvelle méthode
+#Code
+	public static void approveFriend(String key, int id_friend) throws SQLException, InvalidKeyException{
+		int id_user = SessionTools.getUserByKey(key);
+		approveFriend(id_user, id_friend);
+	}
+	
+	public static void approveFriend(int id_user, int id_friend) throws SQLException{
+		Connection c = ConnectionTools.getMySQLConnection();
+		Statement st = c.createStatement();
+		
+		String query = "UPDATE "+DBStatic.TABLE_FRIEND+" SET approved=1 WHERE id_user="+id_user+" AND id_friend="+id_friend+";";
+		
+		st.executeUpdate(query);
+		
+		st.close();
+		c.close();
+	}
+#End
+
+
+----
+Client
+----
+
+Modification de l'objet Environnement
+#Code
+function Environnement(sKey){
+	this.isConnected = false;
+	if (sKey=="") {
+		this.sessionKey = undefined;
+	} else {
+		this.sessionKey = sKey;
+	}
+	this.isRoot = false;
+	this.idUser = undefined;
+	this.login = undefined;
+	this.listFriends = [];
+	this.listToApprove = [];
+}
+#End
+
+Modification de la fonction getListFriends
+#Code
+function getListFriends(init=false) {
+	var request = $.ajax({
+		method: "POST",
+		url: "friend/listFriend",
+		data: { key: env.sessionKey },
+		dataType: "json",
+		success: function(msg){
+			console.log(msg)
+			if(msg.Status=="OK"){
+				jsonFriends = msg.friends;
+				for (var i = 0; i < jsonFriends.length; i++) {
+					var one_friend = jsonFriends[i];
+					var one_user = new User(one_friend.user_id,one_friend.login);
+					env.listFriends[one_friend.user_id] = one_user;
+				}
+
+				jsonToApprove = msg.waitApproved;
+				for (var i = 0; i < jsonToApprove.length; i++) {
+					var one_friend = jsonToApprove[i];
+					var one_user = new User(one_friend.user_id,one_friend.login);
+					env.listToApprove[one_friend.user_id] = one_user;
+				}
+
+				listToApproveUsers($('#nav'));
+
+				console.log(env.listFriends);
+				console.log(env.listToApprove);
+
+				if(init) loadMessagesList();
+			} else {
+				//Unable to get friend list
+			}
+		}
+	});
+}
+#End
+
+Ajout de la fonction listToApproveUsers
+#Code
+function listToApproveUsers(mconteneur) {
+	env.listToApprove.forEach(function(user) {
+		user.renderHtml(mconteneur,"approveList");
+	});
+}
+#End
+
+Modification de User.prototype.renderHtml
+#Code
+User.prototype.renderHtml = function(mconteneur,option="") {
+	var template = "<div class='user-container'><div class='user link' data-id='{{iduser}}' data-login='{{loginuser}}' onclick='javascript:showProfilePage(this)'>{{loginuser}}</div>{{#isApproveList}}<button data-id='{{iduser}}' data-login='{{loginuser}}' onclick='javascript:acceptFriend(this)'>R</button><button data-id='{{iduser}}' data-login='{{loginuser}}' onclick='javascript:acceptFriend(this)'>A</button>{{/isApproveList}}</div>";
+	
+
+	var values = {
+		iduser: this.id,
+		loginuser: this.login,
+		isApproveList: (option=="approveList") ? true : false
+	}
+
+	var rendered = Mustache.render(template, values);
+	console.log(rendered);
+	mconteneur.append(rendered);
+};
+#End
+
+Nouvelles fonctions
+#Code
+function refuseFriend(elem) {
+	var id_friend= elem.getAttribute('data-id');
+	var request = $.ajax({
+		method: "POST",
+		url: "friend/approveFriend",
+		data: { key: env.sessionKey, friend: id_friend, action: "refuse"},
+		dataType: "json",
+		success: function(msg){
+			console.log(msg)
+			if(msg.Status=="OK"){
+				alert("Refusé");
+			} else {
+				alert("Erreur ajout ami");
+			}
+		}
+	});
+}
+
+function acceptFriend(elem) {
+	var id_friend= elem.getAttribute('data-id');
+	var request = $.ajax({
+		method: "POST",
+		url: "friend/approveFriend",
+		data: { key: env.sessionKey, friend: id_friend, action: "accept" },
+		dataType: "json",
+		success: function(msg){
+			console.log(msg)
+			if(msg.Status=="OK"){
+				alert("Acccepté");
+			} else {
+				alert("Erreur ajout ami");
+			}
+		}
+	});
+}
+#End
+
+
+La fonctionnalité marche. Pas eu le temps de mettre à jour la liste ami locale et supprimer l'objet html.
+Déconnexion/Reconnexion pour prendre en compte du coté client (serveur SQL modifié)

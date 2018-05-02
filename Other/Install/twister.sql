@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: May 01, 2018 at 06:21 PM
+-- Generation Time: May 02, 2018 at 06:12 PM
 -- Server version: 5.7.22-0ubuntu0.16.04.1
 -- PHP Version: 7.0.28-0ubuntu0.16.04.1
 
@@ -31,23 +31,24 @@ USE `twister`;
 DROP TABLE IF EXISTS `Friend`;
 CREATE TABLE `Friend` (
   `id_user` int(10) UNSIGNED NOT NULL,
-  `id_friend` int(10) UNSIGNED NOT NULL
+  `id_friend` int(10) UNSIGNED NOT NULL,
+  `approved` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Table des amis';
 
 --
 -- Dumping data for table `Friend`
 --
 
-INSERT INTO `Friend` (`id_user`, `id_friend`) VALUES
-(1, 2),
-(1, 3),
-(2, 1),
-(2, 3),
-(2, 5),
-(3, 1),
-(3, 2),
-(5, 2),
-(5, 4);
+INSERT INTO `Friend` (`id_user`, `id_friend`, `approved`) VALUES
+(1, 2, 1),
+(1, 3, 1),
+(2, 1, 1),
+(2, 3, 0),
+(2, 5, 1),
+(3, 1, 0),
+(3, 2, 0),
+(5, 2, 0),
+(5, 4, 0);
 
 -- --------------------------------------------------------
 
@@ -69,7 +70,8 @@ CREATE TABLE `Session` (
 --
 
 INSERT INTO `Session` (`id`, `skey`, `id_user`, `sdate`, `root`) VALUES
-(8, '62e0c192a89b433990a1e6bd88285bcf', 1, '2018-05-01 16:06:10', 0);
+(16, 'ee6236cca3184d579aa489a64902d508', 4, '2018-05-02 11:31:41', 0),
+(19, 'acc4967b6c0b471596b74f7da84a758a', 1, '2018-05-02 16:03:29', 0);
 
 -- --------------------------------------------------------
 
@@ -97,7 +99,8 @@ INSERT INTO `User` (`id`, `login`, `password`, `root`, `nom`, `prenom`, `age`) V
 (2, 'Noxi', 0x2a43463136313038424145324445423245453541433430363232383032364335304442434346433539, 0, NULL, NULL, NULL),
 (3, 'panda', 0x2a35313843333643303843374230314242343639423930343542363737333134444430453533444535, 0, NULL, NULL, NULL),
 (4, 'theGreatTrixie', 0x2a37454136413534423737414534303432373846433331304131444239373645393331433437334146, 0, NULL, NULL, NULL),
-(5, 'sparkle', 0x2a34423044373243413044364444454430423444423143363231393635333842453345453235424542, 0, NULL, 'Twilight', NULL);
+(5, 'sparkle', 0x2a34423044373243413044364444454430423444423143363231393635333842453345453235424542, 0, NULL, 'Twilight', NULL),
+(6, 'toto', 0x2a32343730433043303644454534324644313631384242393930303541444341324543394431453139, 0, NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -136,12 +139,12 @@ ALTER TABLE `User`
 -- AUTO_INCREMENT for table `Session`
 --
 ALTER TABLE `Session`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 --
 -- AUTO_INCREMENT for table `User`
 --
 ALTER TABLE `User`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 --
 -- Constraints for dumped tables
 --

@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -61,13 +62,13 @@ public class FriendTools {
 		int id_user = SessionTools.getUserByKey(key);
 		return listFriend(id_user);
 	}
-
+	
 	private static JSONArray listFriend(int id_user) throws SQLException, JSONException {
 		Connection c = ConnectionTools.getMySQLConnection();
 		Statement st = c.createStatement();
 		
 		String query = "SELECT U.* FROM "+DBStatic.TABLE_FRIEND+" AS F JOIN "
-				+DBStatic.TABLE_USER+" AS U ON F.id_friend=U.id WHERE id_user="+id_user+";";
+				+DBStatic.TABLE_USER+" AS U ON F.id_friend=U.id WHERE id_user="+id_user+" AND approved=1;";
 		
 		ResultSet rs = st.executeQuery(query);
 		
@@ -87,7 +88,38 @@ public class FriendTools {
 		
 		return userFriends;
 	}
-
+	
+	public static JSONArray listWaitApproved(String key) throws SQLException, InvalidKeyException, JSONException{
+		int id_user = SessionTools.getUserByKey(key);
+		return listWaitApproved(id_user);
+	}
+	
+	private static JSONArray listWaitApproved(int id_user) throws SQLException, JSONException {
+		Connection c = ConnectionTools.getMySQLConnection();
+		Statement st = c.createStatement();
+		
+		String query = "SELECT U.* FROM "+DBStatic.TABLE_FRIEND+" AS F JOIN "
+				+DBStatic.TABLE_USER+" AS U ON F.id_user=U.id WHERE id_friend="+id_user+" AND approved=0;";
+		
+		ResultSet rs = st.executeQuery(query);
+		
+		JSONArray userFriends = new JSONArray();
+		
+		while (rs.next()) {
+			JSONObject json = new JSONObject();
+			
+			json.put("user_id", rs.getInt("id"));
+			json.put("login", rs.getString("login"));
+			
+			userFriends.put(json);
+		}
+		
+		st.close();
+		c.close();
+		
+		return userFriends;
+	}
+	
 	public static int[] getFriends(int id_user) throws SQLException {
 		Connection c = ConnectionTools.getMySQLConnection();
 		Statement st = c.createStatement();
@@ -109,5 +141,21 @@ public class FriendTools {
 		
 		return friendsArray;
 	}
-
+	
+	public static void approveFriend(String key, int id_friend) throws SQLException, InvalidKeyException{
+		int id_user = SessionTools.getUserByKey(key);
+		approveFriend(id_user, id_friend);
+	}
+	
+	public static void approveFriend(int id_user, int id_friend) throws SQLException{
+		Connection c = ConnectionTools.getMySQLConnection();
+		Statement st = c.createStatement();
+		
+		String query = "UPDATE "+DBStatic.TABLE_FRIEND+" SET approved=1 WHERE id_user="+id_user+" AND id_friend="+id_friend+";";
+		
+		st.executeUpdate(query);
+		
+		st.close();
+		c.close();
+	}
 }
