@@ -18,23 +18,18 @@ L'application sera en architecture client-serveur, en modèle MVC
 * SGBDR : MySQL 5.7 (pour stockage des utilisateurs, sessions et amis)
 * SGBD NoSQL : MongoDB 3.2 (pour stockage des messages)
 
-#### Fonctionalitées obligatoires à implémenter (liste minimale)
+#### Fonctionalitées implémentées
 * Gestion utilisateur (création, login, logout)
-* Gestion messages (ajout)
+* Gestion messages (ajout, ajout commentaires, listage des messages (all/user/friend), supression (non implémenté côté client))
 * Gestion amis (ajout, suppression)
-* Recherche (recherche de messages)
+* Recherche (recherche de messages et utilisateur par mots clés)
 
-#### Fonctionnalitées suplémentaires prévues ou implémentées
-* Gestion utilisateur (modification)
-* Gestion messages (suppression, ajout commentaires, listage des messages (all/user/friend))
-* Gestion amis (listage)
-
-
-### Client (non implémenté encore)
+### Client
 * HTML
 * Javascript
 * Jquery
 * Ajax
+* API Mustache
 
 
 ### Membres du projet
